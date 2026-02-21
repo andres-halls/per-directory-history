@@ -20,23 +20,24 @@ This is a standalone repository for the script, however it is also included in
 Usage
 ----------------------------------------------------------------------------
 
-1.  Load this script into your interactive ZSH session:
+The default mode is per directory history, interact with your history as normal.
 
-        % source zsh-per-directory-history.zsh
-
-2.  The default mode if per directory history, interact with your history as normal.
-
-3.  Press ^G (the Control and G keys simultaneously) to toggle between local
-    and global histories.  If you would prefer a different shortcut to toggle
-    set the PER_DIRECTORY_HISTORY_TOGGLE environment variable.
+Press ^G (the <kbd>Control</kbd> and <kbd>G</kbd> keys simultaneously) to toggle
+between local and global histories. If you would prefer a different shortcut to
+toggle set the `PER_DIRECTORY_HISTORY_TOGGLE` environment variable.
 
 -------------------------------------------------------------------------------
 Configuration
 -------------------------------------------------------------------------------
 
-* HISTORY_BASE a global variable that defines the base directory in which the 
-  directory histories are stored
-* per-directory-history-toggle-history is the function to toggle the history
+* `HISTORY_BASE` is a global variable that defines the base directory in which the
+  directory histories are stored (default `$HOME/.directory_history`).
+* `per-directory-history-toggle-history` is the function to toggle between local
+  and global histories.
+* `PER_DIRECTORY_HISTORY_TOGGLE` is the key binding used to run the toggle-history
+  function above (default `^G`)
+* `PER_DIRECTORY_HISTORY_PRINT_MODE_CHANGE` is a variable which toggles whether
+  the current mode is printed to the screen following a mode change (default `true`)
 
 -------------------------------------------------------------------------------
 History

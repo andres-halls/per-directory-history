@@ -21,7 +21,7 @@
 #-------------------------------------------------------------------------------
 #
 # The idea/inspiration for a per directory history is from Stewart MacArthur[1]
-# and Dieter[2], the implementation idea is from Bart Schaefer on the the zsh
+# and Dieter[2], the implementation idea is from Bart Schaefer on the zsh
 # mailing list[3].  The implementation is by Jim Hester in September 2012.
 #
 # [1]: http://www.compbiome.com/2010/07/bash-per-directory-bash-history.html
@@ -59,6 +59,7 @@
 [[ -z $HISTORY_BASE ]] && HISTORY_BASE="$HOME/.directory_history"
 [[ -z $HISTORY_START_WITH_GLOBAL ]] && HISTORY_START_WITH_GLOBAL=false
 [[ -z $PER_DIRECTORY_HISTORY_TOGGLE ]] && PER_DIRECTORY_HISTORY_TOGGLE='^G'
+[[ -z $PER_DIRECTORY_HISTORY_PRINT_MODE_CHANGE ]] && PER_DIRECTORY_HISTORY_PRINT_MODE_CHANGE=true
 
 #-------------------------------------------------------------------------------
 # toggle global/directory history used for searching - ctrl-G by default
@@ -68,13 +69,15 @@ function per-directory-history-toggle-history() {
   if [[ $_per_directory_history_is_global == true ]]; then
     _per-directory-history-set-directory-history
     _per_directory_history_is_global=false
-    zle -I
-    echo "using local history"
+    if [[ $PER_DIRECTORY_HISTORY_PRINT_MODE_CHANGE == true ]]; then
+      zle -M "using local history"
+    fi
   else
     _per-directory-history-set-global-history
     _per_directory_history_is_global=true
-    zle -I
-    echo "using global history"
+    if [[ $PER_DIRECTORY_HISTORY_PRINT_MODE_CHANGE == true ]]; then
+      zle -M "using global history"
+    fi
   fi
 }
 
@@ -117,7 +120,8 @@ function _per-directory-history-addhistory() {
   if [[ -o hist_ignore_space ]] && [[ "$1" == \ * ]]; then
       true
   else
-      print -Sr -- "${1%%$'\n'}"
+      # print -Sr -- "${1%%$'\n'}"
+      fc -p "$orig_histfile"
       # instantly write history if set options require it.
       if [[ -o share_history ]] || \
          [[ -o inc_append_history ]] || \
@@ -132,6 +136,10 @@ function _per-directory-history-addhistory() {
 function _per-directory-history-precmd() {
   if [[ $_per_directory_history_initialized == false ]]; then
     _per_directory_history_initialized=true
+
+    if [[ -z "$orig_histfile" ]]; then
+      orig_histfile="$HISTFILE"
+    fi
 
     if [[ $HISTORY_START_WITH_GLOBAL == true ]]; then
       _per-directory-history-set-global-history
